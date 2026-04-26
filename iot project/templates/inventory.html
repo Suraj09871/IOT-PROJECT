@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS — Inventory</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">N</div>
+    <span class="nav-title">NEX<span>US</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Dashboard</a>
+    <a href="/inventory" class="nav-link active">Inventory</a>
+    <a href="/report" class="nav-link">Report</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    SYSTEMS ONLINE
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <div class="page-header animate-in">
+    <h1>INVENTORY <span>MANAGEMENT</span></h1>
+    <p>// PRODUCT TRACKING — ADD, EDIT &amp; REMOVE STOCK</p>
+  </div>
+
+  <!-- Add Product Form -->
+  <div class="form-card animate-in delay-1">
+    <p class="section-title" style="margin-bottom:20px;">Add New Product</p>
+    <form action="/add" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="name">Product Name</label>
+          <input class="form-input" type="text" id="name" name="name" placeholder="e.g. Arduino Nano" required>
+        </div>
+        <div class="form-group" style="max-width:180px;">
+          <label class="form-label" for="qty">Quantity</label>
+          <input class="form-input" type="number" id="qty" name="qty" placeholder="0" min="0" required>
+        </div>
+        <div style="flex-shrink:0;">
+          <button type="submit" class="btn btn-primary">+ ADD ITEM</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Inventory Table -->
+  <div class="data-table-wrapper animate-in delay-2">
+    <div class="table-header">
+      <h2>Stock Register</h2>
+      <div class="search-wrapper">
+        <span class="search-icon">⌕</span>
+        <input class="form-input search-input" type="text" id="search" placeholder="Search products..." style="width:240px;">
+      </div>
+    </div>
+
+    <table id="product-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>#{{"%04d"|format(p[0])}}</td>
+          <td>{{p[1]}}</td>
+          <td>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:14px;color:
+              {% if p[2] < 10 %}var(--accent-red)
+              {% elif p[2] < 50 %}var(--accent-yellow)
+              {% else %}var(--accent-green){% endif %}">
+              {{p[2]}}
+            </span>
+            <span style="color:var(--text-muted);font-size:12px;"> units</span>
+          </td>
+          <td>
+            {% if p[2] < 10 %}
+              <span class="badge badge-red">Low Stock</span>
+            {% elif p[2] < 50 %}
+              <span class="badge badge-yellow">Limited</span>
+            {% else %}
+              <span class="badge badge-green">In Stock</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="action-btns">
+              <a href="/edit/{{p[0]}}" class="btn btn-ghost" style="padding:6px 14px;font-size:12px;">EDIT</a>
+              <a href="/delete/{{p[0]}}" class="btn btn-danger" style="padding:6px 14px;font-size:12px;" onclick="return confirm('Delete this product?')">DELETE</a>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);font-family:'Share Tech Mono',monospace;">
+            // NO PRODUCTS FOUND — ADD SOME ABOVE
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="padding:12px 24px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between;">
+      <span>{{ products|length }} RECORDS</span>
+      <span>LAST SYNC: <span style="color:var(--accent-cyan);" id="last-sync"></span></span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Search
+document.getElementById("search").addEventListener("input", function() {
+  const query = this.value.toLowerCase();
+  document.querySelectorAll("#product-table tbody tr").forEach(row => {
+    const name = row.cells[1]?.textContent.toLowerCase() || "";
+    row.style.display = name.includes(query) ? "" : "none";
+  });
+});
+
+// Timestamp
+const now = new Date();
+document.getElementById("last-sync").textContent = now.toLocaleTimeString();
+</script>
+</body>
+</html>

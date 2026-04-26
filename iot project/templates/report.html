@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS — Warehouse Report</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    @media print {
+      .navbar, .no-print { display: none !important; }
+      body { background: #fff; color: #000; }
+      .page-wrapper { padding: 0; max-width: 100%; }
+      .data-table-wrapper { border: 1px solid #ccc; }
+      th, td { color: #000 !important; border-color: #ccc !important; }
+      .badge { border: 1px solid #999 !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar no-print">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">N</div>
+    <span class="nav-title">NEX<span>US</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Dashboard</a>
+    <a href="/inventory" class="nav-link">Inventory</a>
+    <a href="/report" class="nav-link active">Report</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    SYSTEMS ONLINE
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <div class="page-header animate-in" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+    <div>
+      <h1>WAREHOUSE <span>REPORT</span></h1>
+      <p>// FULL INVENTORY SNAPSHOT — <span id="report-date"></span></p>
+    </div>
+    <div class="no-print" style="display:flex;gap:10px;">
+      <button onclick="window.print()" class="btn btn-primary">⬇ PRINT / EXPORT</button>
+      <a href="/inventory" class="btn btn-ghost">← BACK</a>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="report-summary animate-in delay-1">
+    <div class="card">
+      <div class="card-label">Total Products</div>
+      <div class="card-value" style="color:var(--accent-cyan);" id="total-products">{{products|length}}</div>
+      <div style="margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">unique SKUs</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Total Units</div>
+      <div class="card-value" style="color:var(--accent-green);" id="total-units">
+        {% set total = namespace(qty=0) %}
+        {% for p in products %}{% set total.qty = total.qty + p[2] %}{% endfor %}
+        {{total.qty}}
+      </div>
+      <div style="margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">items in stock</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Low Stock Alerts</div>
+      <div class="card-value" style="color:var(--accent-red);">
+        {% set low = namespace(count=0) %}
+        {% for p in products %}{% if p[2] < 10 %}{% set low.count = low.count + 1 %}{% endif %}{% endfor %}
+        {{low.count}}
+      </div>
+      <div style="margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">items below threshold</div>
+    </div>
+  </div>
+
+  <!-- Report Table -->
+  <div class="data-table-wrapper animate-in delay-2">
+    <div class="table-header">
+      <h2>Full Inventory Listing</h2>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">SNAPSHOT AT <span id="report-time" style="color:var(--accent-cyan);"></span></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Stock Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>#{{"%04d"|format(p[0])}}</td>
+          <td>{{p[1]}}</td>
+          <td style="font-family:'Share Tech Mono',monospace;color:
+            {% if p[2] < 10 %}var(--accent-red)
+            {% elif p[2] < 50 %}var(--accent-yellow)
+            {% else %}var(--accent-green){% endif %}">
+            {{p[2]}} units
+          </td>
+          <td>
+            {% if p[2] < 10 %}
+              <span class="badge badge-red">⚠ Low Stock</span>
+            {% elif p[2] < 50 %}
+              <span class="badge badge-yellow">◑ Limited</span>
+            {% else %}
+              <span class="badge badge-green">✓ In Stock</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);font-family:'Share Tech Mono',monospace;">
+            // NO PRODUCTS IN DATABASE
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="padding:12px 24px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">
+      END OF REPORT — {{products|length}} RECORDS TOTAL
+    </div>
+  </div>
+
+</div>
+
+<script>
+const now = new Date();
+document.getElementById("report-date").textContent = now.toLocaleDateString('en-US', {weekday:'short', year:'numeric', month:'short', day:'numeric'}).toUpperCase();
+document.getElementById("report-time").textContent = now.toLocaleTimeString();
+</script>
+
+</body>
+</html>

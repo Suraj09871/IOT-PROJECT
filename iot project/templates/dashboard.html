@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS — Smart Warehouse</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">N</div>
+    <span class="nav-title">NEX<span>US</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link active">Dashboard</a>
+    <a href="/inventory" class="nav-link">Inventory</a>
+    <a href="/report" class="nav-link">Report</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    SYSTEMS ONLINE
+  </div>
+</nav>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item">TEMP <span>{{data.temperature}}°C</span></span>
+    <span class="ticker-item">HUMIDITY <span>{{data.humidity}}%</span></span>
+    <span class="ticker-item">ITEMS STORED <span>{{data["total_items"]}}</span></span>
+    <span class="ticker-item">INCOMING <span>{{data.incoming}}</span></span>
+    <span class="ticker-item">OUTGOING <span>{{data.outgoing}}</span></span>
+    <span class="ticker-item">GAS SENSOR <span>{% if data.gas %}ALERT{% else %}CLEAR{% endif %}</span></span>
+    <span class="ticker-item">MOTION <span>{% if data.motion %}DETECTED{% else %}CLEAR{% endif %}</span></span>
+    <!-- duplicate for infinite scroll -->
+    <span class="ticker-item">TEMP <span>{{data.temperature}}°C</span></span>
+    <span class="ticker-item">HUMIDITY <span>{{data.humidity}}%</span></span>
+    <span class="ticker-item">ITEMS STORED <span>{{data["total_items"]}}</span></span>
+    <span class="ticker-item">INCOMING <span>{{data["incoming"]}}</span></span>
+    <span class="ticker-item">OUTGOING <span>{{data["outgoing"]}}</span></span>
+    <span class="ticker-item">GAS SENSOR <span>{% if data.gas %}ALERT{% else %}CLEAR{% endif %}</span></span>
+    <span class="ticker-item">MOTION <span>{% if data.motion %}DETECTED{% else %}CLEAR{% endif %}</span></span>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Page Header -->
+  <div class="page-header animate-in">
+    <h1>WAREHOUSE <span>OVERVIEW</span></h1>
+    <p>// REAL-TIME MONITORING &amp; CONTROL PANEL — NODE-07</p>
+  </div>
+
+  <!-- Sensor Cards -->
+  <p class="section-title">Sensor Telemetry</p>
+  <div class="sensor-grid">
+
+    <div class="sensor-card animate-in delay-1">
+      <div class="bar bar-blue"></div>
+      <div class="card-label">Temperature</div>
+      <div class="card-value">{{data.temperature}}<span class="card-unit">°C</span></div>
+      <div style="margin-top:12px;">
+        <div style="height:3px;background:var(--bg-primary);border-radius:2px;">
+          <div style="width:{{((data.temperature-20)/20*100)|int}}%;height:100%;background:var(--accent-blue);border-radius:2px;transition:width 1s;"></div>
+        </div>
+        <div style="margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Range: 20–40°C</div>
+      </div>
+    </div>
+
+    <div class="sensor-card animate-in delay-1">
+      <div class="bar bar-cyan"></div>
+      <div class="card-label">Humidity</div>
+      <div class="card-value">{{data.humidity}}<span class="card-unit">%</span></div>
+      <div style="margin-top:12px;">
+        <div style="height:3px;background:var(--bg-primary);border-radius:2px;">
+          <div style="width:{{((data.humidity-40)/40*100)|int}}%;height:100%;background:var(--accent-cyan);border-radius:2px;"></div>
+        </div>
+        <div style="margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Range: 40–80%</div>
+      </div>
+    </div>
+
+    <div class="sensor-card animate-in delay-2">
+      <div class="bar {% if data.gas %}bar-red{% else %}bar-green{% endif %}"></div>
+      <div class="card-label">Gas Sensor</div>
+      <div style="margin-top:8px;">
+        {% if data.gas %}
+          <span class="badge badge-red">⚠ ALERT DETECTED</span>
+        {% else %}
+          <span class="badge badge-green">✓ ALL CLEAR</span>
+        {% endif %}
+      </div>
+      <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">MQ-2 / MQ-135 Sensor</div>
+    </div>
+
+    <div class="sensor-card animate-in delay-2">
+      <div class="bar {% if data.motion %}bar-yellow{% else %}bar-green{% endif %}"></div>
+      <div class="card-label">Motion Detector</div>
+      <div style="margin-top:8px;">
+        {% if data.motion %}
+          <span class="badge badge-yellow">◉ MOTION DETECTED</span>
+        {% else %}
+          <span class="badge badge-green">● NO MOTION</span>
+        {% endif %}
+      </div>
+      <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">PIR Sensor — Zone Active</div>
+    </div>
+
+    <div class="sensor-card animate-in delay-3">
+      <div class="bar bar-purple"></div>
+      <div class="card-label">Items Stored</div>
+      <div class="card-value">{{data["total_items"]}}</div>
+      <div style="margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">units tracked</div>
+    </div>
+
+    <div class="sensor-card animate-in delay-3">
+      <div class="bar bar-yellow"></div>
+      <div class="card-label">Shipments Today</div>
+      <div style="margin-top:6px;display:flex;gap:20px;align-items:flex-end;">
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent-green);margin-bottom:4px;">▲ IN</div>
+          <div class="card-value" style="font-size:28px;color:var(--accent-green);">{{data["incoming"]}}</div>
+        </div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent-red);margin-bottom:4px;">▼ OUT</div>
+          <div class="card-value" style="font-size:28px;color:var(--accent-red);">{{data["outgoing"]}}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Charts -->
+  <p class="section-title">Analytics</p>
+  <div class="charts-grid">
+
+    <div class="chart-card wide animate-in delay-1">
+      <div class="chart-title">Temperature Log (Last 8 Readings)</div>
+      <canvas id="chart1"></canvas>
+    </div>
+
+    <div class="chart-card animate-in delay-2">
+      <div class="chart-title">Zone Distribution</div>
+      <canvas id="chart3"></canvas>
+    </div>
+
+    <div class="chart-card animate-in delay-1">
+      <div class="chart-title">Weekly Inventory</div>
+      <canvas id="chart2"></canvas>
+    </div>
+
+    <div class="chart-card animate-in delay-2">
+      <div class="chart-title">Storage Utilization</div>
+      <canvas id="chart4"></canvas>
+    </div>
+
+    <div class="chart-card animate-in delay-3">
+      <div class="chart-title">Shipment Flow</div>
+      <canvas id="chart5"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Warehouse Map -->
+  <p class="section-title">Zone Map</p>
+  <div class="warehouse-map animate-in">
+    <div class="zone-block zone-a">
+      <div class="zone-label">ZONE A</div>
+      <div class="zone-stat">Electronics &amp; Components</div>
+      <div style="margin:10px 0;font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--accent-green);">72%</div>
+      <div class="zone-stat">144 / 200 slots</div>
+      <div class="zone-capacity"><div class="zone-capacity-fill"></div></div>
+    </div>
+    <div class="zone-block zone-b">
+      <div class="zone-label">ZONE B</div>
+      <div class="zone-stat">Raw Materials</div>
+      <div style="margin:10px 0;font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--accent-blue);">58%</div>
+      <div class="zone-stat">116 / 200 slots</div>
+      <div class="zone-capacity"><div class="zone-capacity-fill"></div></div>
+    </div>
+    <div class="zone-block zone-c">
+      <div class="zone-label">ZONE C</div>
+      <div class="zone-stat">Finished Goods</div>
+      <div style="margin:10px 0;font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--accent-yellow);">89%</div>
+      <div class="zone-stat">178 / 200 slots</div>
+      <div class="zone-capacity"><div class="zone-capacity-fill"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

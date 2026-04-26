@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS — Edit Product</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">N</div>
+    <span class="nav-title">NEX<span>US</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Dashboard</a>
+    <a href="/inventory" class="nav-link active">Inventory</a>
+    <a href="/report" class="nav-link">Report</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    SYSTEMS ONLINE
+  </div>
+</nav>
+
+<div class="page-wrapper" style="max-width:680px;">
+
+  <div class="page-header animate-in">
+    <h1>EDIT <span>PRODUCT</span></h1>
+    <p>// MODIFY RECORD — ID #{{"%04d"|format(product[0])}}</p>
+  </div>
+
+  <div class="form-card animate-in delay-1">
+    <p class="section-title" style="margin-bottom:24px;">Product Details</p>
+
+    <form method="POST">
+      <div class="form-group" style="margin-bottom:20px;">
+        <label class="form-label">Product Name</label>
+        <input class="form-input" type="text" name="name" value="{{product[1]}}" required>
+      </div>
+
+      <div class="form-group" style="margin-bottom:28px;">
+        <label class="form-label">Quantity (units)</label>
+        <input class="form-input" type="number" name="qty" value="{{product[2]}}" min="0" required>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="submit" class="btn btn-success">✓ SAVE CHANGES</button>
+        <a href="/inventory" class="btn btn-ghost">✕ CANCEL</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Info card -->
+  <div class="card animate-in delay-2" style="background:rgba(14,165,233,0.05);">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;line-height:1.8;">
+      // RECORD ID: <span style="color:var(--accent-cyan);">#{{"%04d"|format(product[0])}}</span><br>
+      // CURRENT NAME: <span style="color:var(--text-secondary);">{{product[1]}}</span><br>
+      // CURRENT QTY: <span style="color:var(--text-secondary);">{{product[2]}} units</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
