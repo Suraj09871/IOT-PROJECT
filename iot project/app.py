@@ -40,7 +40,7 @@ ADAFRUIT_IO_USERNAME = "xxxxxxxxxxxxxxxxxxxxx"  # Replace with your actual usern
 ADAFRUIT_IO_KEY = "xxxxxxxxxxxxxxxxxxxxx"  # Replace with your actual key
 
 # Example:
-# ADAFRUIT_IO_USERNAME = "suraj09871"
+# ADAFRUIT_IO_USERNAME = "xxxxxxxxxxxxxxx"
 # ADAFRUIT_IO_KEY = "aio_xxxxxxxxxxxxxxxxxxxxx"
 
 try:
