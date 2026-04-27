@@ -4,8 +4,8 @@ from Adafruit_IO import Client
 from datetime import datetime
 
 # ── Adafruit IO Credentials ──────────────────────────────────────────
-ADAFRUIT_IO_USERNAME = "suraj09871"
-ADAFRUIT_IO_KEY      = "aio_vQQJ63VcvX79VdT1xcQdhQYz4H2v"
+ADAFRUIT_IO_USERNAME = "xxxxxxxxxxxxxx"
+ADAFRUIT_IO_KEY      = "xxxxxxxxxxxxxxxxxxxxx"
 
 aio = Client(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
 
